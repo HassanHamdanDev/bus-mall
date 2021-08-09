@@ -104,7 +104,6 @@ function isclicked(event) {
   }
 }
 
-
 function result() {
 
   let ulElement = document.createElement('ul');
