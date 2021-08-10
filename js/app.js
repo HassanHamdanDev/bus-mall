@@ -19,19 +19,17 @@ function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function Pick(name, imageSrc) {
+function Pick(name, imageSrc, shown = 0, clicked = 0) {
   this.name = name;
   this.imagePath = imageSrc;
-  this.timesShown = 0;
-  this.timesClicked = 0;
+  this.timesShown = shown;
+  this.timesClicked = clicked;
   Pick.all.push(this);
 }
 
 Pick.all = [];
 
-for (let i = 0; i < imgArray.length; i++) {
-  new Pick(imgArray[i].split('.')[0], imgArray[i]);
-}
+getData();
 
 let leftRandom;
 let centerRandom;
@@ -57,12 +55,15 @@ function render() {
   Pick.all[leftRandom].timesShown++;
   Pick.all[centerRandom].timesShown++;
   Pick.all[rightRandom].timesShown++;
+
+  localStorage.data = JSON.stringify(Pick.all);
 }
 
 render();
 
 let buttonElement;
 let buttonChartElement;
+let buttonAgainElement;
 
 imageSection.addEventListener('click', clickImage);
 function clickImage(event) {
@@ -84,6 +85,12 @@ function clickImage(event) {
     sectionElement.appendChild(buttonChartElement);
 
     buttonChartElement.addEventListener('click', resultChart);
+
+    buttonAgainElement = document.createElement('button');
+    buttonAgainElement.textContent = 'Pick Again !';
+    sectionElement.appendChild(buttonAgainElement);
+
+    buttonAgainElement.addEventListener('click', reload);
   }
 }
 
@@ -188,4 +195,22 @@ function resultChart() {
 
   buttonChartElement.removeEventListener('click', resultChart);
 
+}
+
+function getData() {
+  if (localStorage.data) {
+    let newData = JSON.parse(localStorage.data);
+    for (let i = 0; i < newData.length; i++) {
+      new Pick(newData[i].name, newData[i].imagePath, newData[i].timesShown, newData[i].timesClicked);
+    }
+  } else {
+    for (let i = 0; i < imgArray.length; i++) {
+      new Pick(imgArray[i].split('.')[0], imgArray[i]);
+    }
+  }
+}
+
+function reload() {
+  location.reload();
+  buttonAgainElement.removeEventListener('click', reload);
 }
